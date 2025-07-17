@@ -4,9 +4,11 @@ metadata:
   name: frontend
   namespace: mern-app
 spec:
-  ports:
-  - port: 3000
-    protocol: TCP
-  type: ClusterIP
   selector:
-    role: frontend
+    app: frontend
+    env: dev
+  ports:
+  - port: 80
+    targetPort: 3000
+  type: ClusterIP
+  

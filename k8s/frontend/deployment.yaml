@@ -4,31 +4,40 @@ metadata:
   name: frontend
   namespace: mern-app
   labels:
-    role: frontend
+    app: frontend
     env: dev
 spec: 
-  replicas: 1
+  replicas: 2
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
-      maxUnavailable: 25%
+      maxUnavailable: 1
   selector:
     matchLabels: 
-      role: frontend
+      app: frontend
+      env: dev
   template:
     metadata:
       labels:
-        role: frontend
+        app: frontend
+        env: dev
     spec: 
       imagePullSecrets:
       - name: ecr-registry-secret
       containers:
       - name: frontend
-        image: 495599741234.dkr.ecr.us-east-1.amazonaws.com/frontend
+        image: 495599741234.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
         imagePullPolicy: Always
         env:
           - name: REACT_APP_BACKEND_URL
             value: "http://ignus.xyz/api/tasks"
         ports:
-        - containerPort: 3000
+          - containerPort: 3000
+        resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"  

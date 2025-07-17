@@ -28,7 +28,7 @@ app.get("/ready", (req, res) => {
   const isDbConnected = mongoose.connection.readyState === 1;
 
   if (isDbConnected !== lastReadyState) {
-    console.log(`📡 DB Ready State Changed: ${mongoose.connection.readyState}`);
+    console.log(`DB Ready State Changed: ${mongoose.connection.readyState}`);
     lastReadyState = isDbConnected;
   }
 
@@ -48,7 +48,7 @@ app.get("/started", (req, res) => {
 app.use("/api/tasks", taskRoutes);
 
 // --- Start Server ---
-const PORT = process.env.PORT || 3500;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server is running at http://localhost:${PORT}`);
 });

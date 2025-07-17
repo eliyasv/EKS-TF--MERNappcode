@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: main-ingress
+  name: mern-ingress
   namespace: mern-app
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
@@ -49,4 +49,4 @@ spec:
               service:
                 name: frontend
                 port:
-                  number: 3000
+                  number: 80

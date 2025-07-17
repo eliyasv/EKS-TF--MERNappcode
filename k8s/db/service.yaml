@@ -7,7 +7,6 @@ spec:
   selector:
     app: mongodb
   ports:
-    - name: mongodb-svc
-      protocol: TCP
-      port: 27017
+    - port: 27017
       targetPort: 27017
+  clusterIP: None  # Headless service for StatefulSet

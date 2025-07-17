@@ -12,7 +12,7 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
-      maxUnavailable: 25%
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: backend
@@ -20,28 +20,36 @@ spec:
     metadata:
       labels:
         app: backend
+        env: dev
     spec:
       imagePullSecrets:
         - name: ecr-registry-secret
       containers:
         - name: backend
-          image: 495599741234.dkr.ecr.us-east-1.amazonaws.com/backend
+          image: 495599741234.dkr.ecr.us-east-1.amazonaws.com/backend:latest
           imagePullPolicy: Always
           env:
-            - name: MONGO_CONN_STR
+            - name: MONGO_URL
               value: mongodb://mongodb-svc:27017/mern-todo?directConnection=true
             - name: MONGO_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: mongo-sec
-                  key: username
+                  name: mongodb-secret
+                  key: mongodb-username
             - name: MONGO_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mongo-sec
-                  key: password
+                  name: mongodb-secret
+                  key: mongodb-password
           ports:
             - containerPort: 5000
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
           livenessProbe:
             httpGet:
               path: /healthz
@@ -62,3 +70,4 @@ spec:
             initialDelaySeconds: 0
             periodSeconds: 10
             failureThreshold: 30
+      terminationGracePeriodSeconds: 10
