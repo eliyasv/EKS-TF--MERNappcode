@@ -49,7 +49,7 @@ pipeline {
         }
         stage('Trivy File Scan') {
             steps {
-                dir('App-Code/frontend') {
+                dir('App-Code/backend') {
                     sh 'trivy fs . > trivyfs.txt'
                 }
             }
@@ -57,7 +57,7 @@ pipeline {
         stage("Build Docker Image") {
             steps {
                 script {
-                    dir('App-Code/frontend') {
+                    dir('App-Code/backend') {
                             sh 'docker system prune -f'
                             sh 'docker container prune -f'
                             sh 'docker build -t $AWS_ECR_REPO_NAME .'
