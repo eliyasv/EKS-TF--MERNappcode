@@ -4,11 +4,11 @@ pipeline {
         nodejs 'nodejs'
     }
     environment  {
-        SCANNER_HOME=tool 'sonar-scanner'
+        SCANNER_HOME = tool 'sonar-scanner'
         AWS_ACCOUNT_ID = credentials('ACCOUNT_ID')
         AWS_ECR_REPO_NAME = credentials('ECR_REPO_FRONTEND')
         AWS_DEFAULT_REGION = 'us-east-1'
-        ECR_REPO_URL = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/"
+        ECR_REPO_URL = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
     }
     stages {
         stage('Cleaning Workspace') {
@@ -18,7 +18,7 @@ pipeline {
         }
         stage('Checkout') {
             steps {
-                git credentialsId: 'GITHUB', url: 'https://github.com/eliyasv/EKS-TF-3tier-app.git'
+                git branch: 'main', credentialsId: 'GITHUB', url: 'https://github.com/eliyasv/EKS-TF-3tier-app.git'
             }
         }
         stage('SonarQube Analysis') {
@@ -60,7 +60,7 @@ pipeline {
                     dir('App-Code/frontend') {
                             sh 'docker system prune -f'
                             sh 'docker container prune -f'
-                            sh 'docker build -t ${AWS_ECR_REPO_NAME} .'
+                            sh 'docker build -t $AWS_ECR_REPO_NAME .'
                     }
                 }
             }
@@ -68,20 +68,20 @@ pipeline {
         stage("Push to ECR") {
             steps {
                 script {
-                        sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin $ECR_REPO_URL}'
-                        sh 'docker tag ${AWS_ECR_REPO_NAME} $ECR_REPO_URL}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}'
-                        sh 'docker push $ECR_REPO_URL}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}'
+                        sh 'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO_URL'
+                        sh 'docker tag $AWS_ECR_REPO_NAME $ECR_REPO_URL/$AWS_ECR_REPO_NAME:$BUILD_NUMBER'
+                        sh 'docker push $ECR_REPO_URL/$AWS_ECR_REPO_NAME:$BUILD_NUMBER'
                 }
             }
         }
         stage("Trivy Image Scan") {
             steps {
-                sh 'trivy image $ECR_REPO_URL}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER} > trivyimage.txt' 
+                sh 'trivy image $ECR_REPO_URL/$AWS_ECR_REPO_NAME:$BUILD_NUMBER > trivyimage.txt' 
             }
         }
         stage('Checkout Code') {
             steps {
-                git credentialsId: 'GITHUB', url: 'https://github.com/eliyasv/EKS-TF-3tier-app.git'
+                git branch: 'main', credentialsId: 'GITHUB', url: 'https://github.com/eliyasv/EKS-TF-3tier-app.git'
             }
         }
         stage('Update Deployment file') {
@@ -90,7 +90,7 @@ pipeline {
                 GIT_USER_NAME = "eliyasv"
             }
             steps {
-                dir('K8s/frontend') {
+                dir('k8s/frontend') {
                     withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                         sh '''
                             git config user.email "eliyasvarghese97@gmail.com"
