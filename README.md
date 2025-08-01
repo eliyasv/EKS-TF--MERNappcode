@@ -1,9 +1,6 @@
 #  End-to-End 3-Tier Application CI/CD with Kubernetes, AWS EKS, Jenkins & Argo CD (GitOps)
 
-> 📌 _Work in Progress (WIP)
-
 This project implements a robust CI/CD pipeline for a 3-tier application using **Jenkins**, **AWS EKS**, and **Argo CD**. It separates **backend** and **frontend** workflows and automates every phase from code analysis to GitOps-based deployment.
-
 
 ---
 
@@ -44,7 +41,7 @@ Ensure Jenkins is configured with:
 
 - Argo CD installed and running in the Kubernetes cluster
 - Proper access configured to monitor your Git repository
-- Permissions to apply manifests to the EKS cluster
+- Applications created and configured to apply manifests to the EKS cluster
 
 ---
 
@@ -59,7 +56,7 @@ These environment variables and credentials should be configured in Jenkins:
 | `AWS_ECR_REPO_NAME`  | ECR repository names                       |
 | `AWS_DEFAULT_REGION` | AWS region                                 |
 | `ECR_REPO_URL`       | Complete ECR repository URL                |
-| `GITHUB`, `github`   | GitHub credentials ID in Jenkins           |
+| `GITHUB`             | GitHub credentials ID in Jenkins           |
 | `sonar-token`        | SonarQube authentication token credentials |
 
 ---
@@ -70,8 +67,9 @@ Each app tier (`backend` and `frontend`) follows this pipeline:
 
 1. **Code Quality Analysis** – using SonarQube
 2. **Dependency Security Scan** – with OWASP Dependency-Check
-3. **Trivy Scan** – for filesystem and Docker image vulnerabilities
+3. **Trivy file Scan** – for filesystem analysis 
 4. **Docker Build & Push** – image tagged and pushed to ECR
+5. **Trivy image Scan** – for Docker image vulnerabilities
 5. **Kubernetes Manifest Update** – deployment YAML updated with new tag
 6. **Argo CD Sync** – deployment triggered to EKS automatically via GitOps
 
@@ -79,14 +77,14 @@ Each app tier (`backend` and `frontend`) follows this pipeline:
 Database
 
 - Deployed as a **Kubernetes StatefulSet** for persistent storage
-- No build pipeline
+- No build pipeline, configured manualy in ArgoCD
 ---
 
 ## 🛠️ Usage
 
 - Pipelines support both **manual** and **automated** triggers.
 - Backend and frontend can build and deploy **in parallel**.
-- Kubernetes deployments always point to the **latest secure image**.
+- Kubernetes deployments always point to the **latest image**.
 - Argo CD ensures **cluster state matches Git** automatically.
 - StatefulSet changes are also GitOps-managed
 
@@ -98,6 +96,7 @@ Database
 - **Quality Gates**: Set `abortPipeline: true` to fail builds on SonarQube quality gate failure.
 - **Approval Gates**: Add manual approvals for production releases if required.
 - **Argo CD Policies**: Modify sync strategy (`auto`, `manual`, `hook-based`) as needed.
+- **Prometheuse and Grafana**: Set up and configure Prometheus and Grafana for montoring
 
 ---
 
